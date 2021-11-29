@@ -1,7 +1,13 @@
 const sapper = document.getElementById('sapper');
 let area = [];
 
-function getCoordsNeighbours(x,y) {
+/**
+ * Получение позиции соседних клеток на поле
+ * @param {number} x координата по x
+ * @param {number} y координата по y
+ * @returns массив с позициями соседних клеток
+ */
+function getCoordsNeighbours(x, y) {
     return [
         [x - 1, y - 1],
         [x - 1, y],
@@ -14,39 +20,73 @@ function getCoordsNeighbours(x,y) {
     ]
 }
 
+/**
+ * Проверка наличия бомбы
+ * @param {number} x координата по x
+ * @param {number} y координата по y
+ * @returns число есть ли бомба в клетке
+ */
 function checkBombOnField(x, y) {
-    if (x < 0 || y < 0 || x > area.length - 1 || y > area[0].length - 1) {
-        return 0;
-    }
-    return area[x][y].isBomb ? 1 : 0;    
-}    
+    return area[x][y].isBomb ? 1 : 0;
+}
 
+/**
+ * Проверка соседних клеток на наличие бомб
+ * @param {number} x координата по x
+ * @param {number} y координата по y
+ * @returns число с кол-во бомб вокруг
+ */
 function checkNeighbours(x, y) {
     let bomb = 0;
-    getCoordsNeighbours(x, y).forEach(elem => bomb += checkBombOnField(elem[0], elem[1]));
+    getCoordsNeighbours(x, y).forEach(elem => {
+        if (elem[0] >= 0 && elem[1] >= 0 && elem[0] < area.length && elem[1] < area[0].length) {
+            bomb += checkBombOnField(elem[0], elem[1]);
+        }
+    });
     document.getElementById(`${x}` + `${y}`).innerHTML = bomb;
     return bomb;
 }
 
+/**
+ * Проверка кликнутой клетки на наличие бомбы или запуск проверки соседних клеток
+ * @param {number} x координата по x
+ * @param {number} y координата по y
+ */
 function clickOnField(x, y) {
+    const value = checkNeighbours(x, y);
+
     if (area[x][y].isBomb) {
         document.getElementById(`${x}` + `${y}`).innerHTML = 'bomb';
         console.log('GAME OVER')
-        return;
-    }
-        
-    const value = checkNeighbours(x, y);
-    if (!value && !(x - 1 < 0 || y - 1 < 0 || x - 1 > area.length - 1 || y - 1 > area[0].length - 1)) {
-        getCoordsNeighbours(x, y).forEach(elem => checkNeighbours(elem[0], elem[1]));
+    } else if (value === 0) {
+        getCoordsNeighbours(x, y).forEach(elem => {
+            if (elem[0] >= 0 && elem[1] >= 0 && elem[0] < area.length && elem[1] < area[0].length) {
+                let val = checkNeighbours(elem[0], elem[1]);
+                if (val === 0 && area[elem[0]][elem[1]].isChecked === false) {
+                    area[elem[0]][elem[1]].isChecked = true;
+                    clickOnField(elem[0], elem[1]);
+                }
+            }
+        });
     }
 }
 
-function checkIsBombs(event) {
+/**
+ * Обработка ids и запуск функции с проверками
+ * @param {*} event
+ */
+function processingId(event) {
     idX = +event.path[1].id.split('')[1];
-    idY = +event.path[0].id.split('')[1];    
+    idY = +event.path[0].id.split('')[1];
     clickOnField(idX, idY);
 }
 
+/**
+ * Отрисовка поля на frontend
+ * @param {number} x координата по x
+ * @param {number} y координата по y
+ * @param {number} bombs кол-во бомб на поле
+ */
 function createArea(x, y, bombs) {
     for (let i = 0; i < x; i++) {
         const lineX = [];
@@ -56,7 +96,8 @@ function createArea(x, y, bombs) {
         for (let j = 0; j < y; j++) {
             lineX.push({
                 name: j,
-                isBomb: false
+                isBomb: false,
+                isChecked: false
             });
             const elemY = document.createElement('div');
             elemX.appendChild(elemY).setAttribute('id', `${i}${  j}`);
@@ -66,6 +107,11 @@ function createArea(x, y, bombs) {
     area = renderBombs(bombs);
 }
 
+/**
+ * Создание бомб на поле
+ * @param {number} bombsAmount кол-во бомб
+ * @returns поле с бомбами
+ */
 function renderBombs(bombsAmount) {
     for (let i = 0; i < bombsAmount; i++) {
         const x = Math.floor(Math.random() * area.length);
@@ -80,5 +126,6 @@ function renderBombs(bombsAmount) {
     return area;
 }
 
-sapper.addEventListener('click', checkIsBombs);
+
 createArea(10, 10, 10);
+sapper.addEventListener('click', processingId);
