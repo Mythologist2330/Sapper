@@ -43,6 +43,7 @@ function checkNeighbours(x, y) {
             bomb += checkBombOnField(elem[0], elem[1]);
         }
     });
+    document.getElementById(`${x}` + `${y}`).style.backgroundColor = '#333';
     document.getElementById(`${x}` + `${y}`).innerHTML = bomb;
     return bomb;
 }
