@@ -16,8 +16,8 @@ function getCoordsNeighbours(x, y) {
         [x, y + 1],
         [x + 1, y - 1],
         [x + 1, y],
-        [x + 1, y + 1]
-    ]
+        [x + 1, y + 1],
+    ];
 }
 
 /**
@@ -58,7 +58,7 @@ function clickOnField(x, y) {
 
     if (area[x][y].isBomb) {
         document.getElementById(`${x}` + `${y}`).innerHTML = 'bomb';
-        console.log('GAME OVER')
+        console.log('GAME OVER');
     } else if (value === 0) {
         getCoordsNeighbours(x, y).forEach(elem => {
             if (elem[0] >= 0 && elem[1] >= 0 && elem[0] < area.length && elem[1] < area[0].length) {
@@ -92,16 +92,16 @@ function createArea(x, y, bombs) {
     for (let i = 0; i < x; i++) {
         const lineX = [];
         const elemX = document.createElement('div');
-        sapper.appendChild(elemX).setAttribute('id', `x${  i}`);
+        sapper.appendChild(elemX).setAttribute('id', `x${i}`);
 
         for (let j = 0; j < y; j++) {
             lineX.push({
                 name: j,
                 isBomb: false,
-                isChecked: false
+                isChecked: false,
             });
             const elemY = document.createElement('div');
-            elemX.appendChild(elemY).setAttribute('id', `${i}${  j}`);
+            elemX.appendChild(elemY).setAttribute('id', `${i}${j}`);
         }
         area.push(lineX);
     }
@@ -121,12 +121,11 @@ function renderBombs(bombsAmount) {
         if (!area[x][y].isBomb) {
             area[x][y].isBomb = true;
         } else {
-            i--
+            i--;
         }
     }
     return area;
 }
-
 
 createArea(10, 10, 10);
 sapper.addEventListener('click', processingId);
