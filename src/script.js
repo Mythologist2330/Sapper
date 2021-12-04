@@ -1,3 +1,4 @@
+// @ts-check
 (function () {
     let area = [];
     let bombs = [];
@@ -8,7 +9,7 @@
 
     /**
      * Получает из формы размеры поля и кол-во бомб на нём
-     * @param {SubmitEvent} e submit event
+     * @param {SubmitEvent & { target: HTMLInputElement }} e submit event
      */
     function submitForm(e) {
         e.preventDefault();
@@ -72,7 +73,7 @@
             .filter(isFieldExists)
             .forEach(([x, y]) => (bomb += checkBombOnField(x, y)));
         document.getElementById(x + '-' + y).style.backgroundColor = '#333';
-        document.getElementById(x + '-' + y).innerHTML = bomb ? bomb : null;
+        document.getElementById(x + '-' + y).innerHTML = bomb ? bomb.toString() : null;
         return bomb;
     }
 
@@ -86,7 +87,9 @@
         if (area[x][y].isBomb) {
             gameOver();
         } else if (!amountBombs) {
-            getCoordsNeighbours(x, y).filter(isFieldExists).forEach(checkField);
+            getCoordsNeighbours(x, y)
+                .filter(isFieldExists)
+                .forEach(value => checkField(value));
         }
     }
 
@@ -103,7 +106,7 @@
 
     /**
      * Проверяет клетку
-     * @param {[number, number]} field координаты по осям X и Y
+     * @param {number[]} field координаты по осям X и Y
      */
     function checkField(field) {
         const [x, y] = field;
@@ -116,7 +119,7 @@
 
     /**
      * Проверяет есть ли указаная клетка на игровом поле
-     * @param {[number, number]} field координаты по осям X и Y
+     * @param {number[]} field координаты по осям X и Y
      * @returns {boolean} true или false
      */
     function isFieldExists(field) {
@@ -129,6 +132,7 @@
      * @param {MouseEvent} event
      */
     function processingId(event) {
+        // @ts-ignore
         const [idX, idY] = event.path[0].id.split('-');
         clickOnField(parseInt(idX), parseInt(idY));
     }
