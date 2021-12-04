@@ -39,7 +39,7 @@ function checkBombOnField(x, y) {
 function checkNeighbours(x, y) {
     let bomb = 0;
     getCoordsNeighbours(x, y).forEach(elem => {
-        if (elem[0] >= 0 && elem[1] >= 0 && elem[0] < area.length && elem[1] < area[0].length) {
+        if (isFieldExists(elem[0], elem[1])) {
             bomb += checkBombOnField(elem[0], elem[1]);
         }
     });
@@ -61,7 +61,7 @@ function clickOnField(x, y) {
         console.log('GAME OVER');
     } else if (value === 0) {
         getCoordsNeighbours(x, y).forEach(elem => {
-            if (elem[0] >= 0 && elem[1] >= 0 && elem[0] < area.length && elem[1] < area[0].length) {
+            if (isFieldExists(elem[0], elem[1])) {
                 let val = checkNeighbours(elem[0], elem[1]);
                 if (val === 0 && area[elem[0]][elem[1]].isChecked === false) {
                     area[elem[0]][elem[1]].isChecked = true;
@@ -70,6 +70,16 @@ function clickOnField(x, y) {
             }
         });
     }
+}
+
+/**
+ * Проверяет есть ли указаная клетка на игровом поле
+ * @param {number} x координата по x
+ * @param {number} y координата по y
+ * @returns {boolean} true или false
+ */
+function isFieldExists(x, y) {
+    return x >= 0 && y >= 0 && x < area.length && y < area[0].length;
 }
 
 /**
