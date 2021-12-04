@@ -44,7 +44,7 @@ function checkNeighbours(x, y) {
         }
     });
     document.getElementById(`${x}` + `${y}`).style.backgroundColor = '#333';
-    document.getElementById(`${x}` + `${y}`).innerHTML = bomb;
+    document.getElementById(`${x}` + `${y}`).innerHTML = bomb ? bomb : null;
     return bomb;
 }
 
