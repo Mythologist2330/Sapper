@@ -183,3 +183,6 @@
         return area;
     }
 })();
+
+createArea(10, 10, 10);
+sapper.addEventListener('click', processingId);
