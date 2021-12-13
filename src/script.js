@@ -20,8 +20,14 @@
         if (area.length) {
             clearArea();
         }
-        createArea(x, y, bombs);
-        sapper.addEventListener('click', processingId);
+
+        if (x > 9 && x < 46 && y > 9 && y < 46) {
+            createArea(x, y, bombs);
+            sapper.addEventListener('click', processingId);
+        } else {
+            console.log('Кол-во полей должо быть не менее 10 и не более 45');
+        }
+
     }
 
     /**
@@ -183,6 +189,3 @@
         return area;
     }
 })();
-
-createArea(10, 10, 10);
-sapper.addEventListener('click', processingId);
