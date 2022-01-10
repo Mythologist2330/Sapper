@@ -2,6 +2,8 @@
 (function () {
     let area = [];
     let bombs = [];
+    let isStart = true;
+    let coordFlags = [];
 
     const sapper = document.getElementById('sapper');
     const form = document.forms['start-form'];
@@ -22,6 +24,7 @@
         }
         createArea(x, y, bombs);
         sapper.addEventListener('click', processingId);
+        sapper.addEventListener('contextmenu', addFlag);
     }
 
     /**
@@ -29,6 +32,9 @@
      */
     function clearArea() {
         area = [];
+        bombs = [];
+        isStart = true;
+        coordFlags = [];
         sapper.replaceChildren();
     }
 
@@ -72,8 +78,10 @@
         getCoordsNeighbours(x, y)
             .filter(isFieldExists)
             .forEach(([x, y]) => (bomb += checkBombOnField(x, y)));
-        document.getElementById(x + '-' + y).style.backgroundColor = '#333';
-        document.getElementById(x + '-' + y).innerHTML = bomb ? bomb.toString() : null;
+        if (document.getElementById(x + '-' + y).innerHTML !== 'F') {
+            document.getElementById(x + '-' + y).className = 'clicked-cell';
+            document.getElementById(x + '-' + y).innerHTML = bomb ? bomb.toString() : null;
+        }
         return bomb;
     }
 
@@ -141,9 +149,9 @@
      * Отрисовка поля на frontend
      * @param {number} x координата по x
      * @param {number} y координата по y
-     * @param {number} bombs кол-во бомб на поле
+     * @param {number} bombsAmount кол-во бомб на поле
      */
-    function createArea(x, y, bombs) {
+    function createArea(x, y, bombsAmount) {
         for (let i = 0; i < x; i++) {
             const lineX = [];
             const elemX = document.createElement('div');
@@ -160,7 +168,8 @@
             }
             area.push(lineX);
         }
-        renderBombs(bombs);
+        renderBombs(bombsAmount);
+        counterBombs(undefined, bombs.length);
     }
 
     /**
@@ -172,14 +181,73 @@
         for (let i = 0; i < bombsAmount; i++) {
             const x = Math.floor(Math.random() * area.length);
             const y = Math.floor(Math.random() * area[0].length);
-            bombs.push([x, y]);
 
             if (!area[x][y].isBomb) {
                 area[x][y].isBomb = true;
+                bombs.push([x, y]);
             } else {
                 i--;
             }
         }
         return area;
     }
+
+
+    function counterBombs(num, amount) {
+
+        let block = document.getElementById('counter-bombs');
+
+        if (isStart) {
+            isStart = false;
+            block.innerHTML = amount;
+            block.className = 'counter-bombs';
+        } else {
+            block.innerHTML = +block.innerHTML + num;
+        }
+
+
+    }
+
+    function addFlag(event) {
+        event.preventDefault();
+
+        const [idX, idY] = event.path[0].id.split('-');
+        let htmlElem = document.getElementById(idX + '-' + idY);
+        let block = document.getElementById('counter-bombs');
+
+        if (htmlElem.innerHTML === '' && htmlElem.className !== 'clicked-cell' && +block.innerHTML !== 0) {
+
+            htmlElem.innerHTML = 'F';
+            counterBombs(-1);
+            coordFlags.push([+idX, +idY]);
+
+            if (+block.innerHTML === 1) {
+                let res = [];
+
+                for (let i = 0; i < coordFlags.length; i++) {
+
+                    for (let j = 0; j < bombs.length; j++) {
+                        if (coordFlags[i][0] === bombs[j][0] && coordFlags[i][1] === bombs[j][1]) {
+                            res.push(bombs[j]);
+                        }
+                    }
+                }
+
+                res = Array.from(new Set(res))
+
+                if (res.length === bombs.length) {
+                    sapper.removeEventListener('click', processingId);
+                    console.log('You win!');
+                }
+            }
+
+        } else if (htmlElem.className !== 'clicked-cell') {
+            htmlElem.innerHTML = '';
+            counterBombs(1);
+        }
+    }
+
+
+
+
 })();

@@ -54,3 +54,21 @@ form button {
 .sapper div div:hover {
     opacity: 0.6;
 }
+
+.counter-bombs{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 50px;
+    margin: auto;
+    border: 3px solid #000;
+    color: red;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+
+.sapper div div.clicked-cell {
+    background-color: #333;
+}
