@@ -221,7 +221,7 @@
             counterBombs(-1);
             coordFlags.push([+idX, +idY]);
 
-            if (+block.innerHTML === 1) {
+            if (+block.innerHTML === 0) {
                 let res = [];
 
                 for (let i = 0; i < coordFlags.length; i++) {
@@ -235,8 +235,23 @@
 
                 res = Array.from(new Set(res))
 
+                console.log(res);
+
                 if (res.length === bombs.length) {
+                    for (let i = 0; i < area.length; i++) {
+
+                        for (let j = 0; j < area[0].length; j++) {
+                            let htmlE = document.getElementById(i + '-' + j);
+
+                            if (htmlE.className !== 'clicked-cell' && htmlE.innerHTML === '') {
+                                console.log(htmlE);
+                                clickOnField(i, j);
+                            }
+                        }
+                    }
+
                     sapper.removeEventListener('click', processingId);
+                    console.log(area);
                     console.log('You win!');
                 }
             }
@@ -246,8 +261,5 @@
             counterBombs(1);
         }
     }
-
-
-
 
 })();
